@@ -485,16 +485,15 @@
         ]
     };
 
-            // Cria o formData e adiciona os arquivos e o embed
-            const formData = new FormData();
+
+
+ // Cria o formData e adiciona os arquivos e o embed
+ const formData = new FormData();
             formData.set('REQUERIMENTO', Requerimento);
             formData.set('NOME', detidoName);
             formData.set('RG', rg);
             formData.set('RESPONSÁVEL', userName);
 
-
- // Cria o formData e adiciona os arquivos e o embed
- const formData = new FormData();
  for (let i = 0; i < imageFiles.length; i++) {
                 formData.append(`file${i}`, imageFiles[i]);
             }
