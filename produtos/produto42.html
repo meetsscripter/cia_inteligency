@@ -472,6 +472,7 @@
         artigosSelecionados.push(checkbox.value);
     });
 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwh1RMyGS7JIivMbvURR9QPHd0zSzgi0hroVGVztpswJe4M_jDkikFbBYPUVeKhQI53/exec';
     const webhookURL = "https://discord.com/api/webhooks/1355744786572644574/FjOuWv-rGHk0nmj3U_JJuiaw5-coEqx8CJM0_slZX24a3oSTxMzDEvU6N9inLeZGynRC";
 
     const embedData = {
@@ -484,6 +485,12 @@
         ]
     };
 
+            // Cria o formData e adiciona os arquivos e o embed
+            const formData = new FormData();
+            formData.set('REQUERIMENTO', Requerimento);
+            formData.set('NOME', detidoName);
+            formData.set('RG', rg);
+            formData.set('RESPONSÁVEL', userName);
 
 
  // Cria o formData e adiciona os arquivos e o embed
@@ -500,7 +507,13 @@
             body: formData
         });
 
-        if (response.ok) {
+                                // Modifica o FormData para incluir uma mensagem fixa
+                const arquivo_enviar = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+        if (response.ok && arquivo_enviar.ok) {
             loading.style.display = 'none'; // Esconde a animação de carregamento
             successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
             form.reset();
