@@ -257,7 +257,6 @@
                 <label for="idDiscord">ID Discord:</label>
                 <input type="text" id="idDiscord" name="idDiscord" required>
 
-
                 <button type="submit">Enviar</button>
             </form>
 
@@ -325,7 +324,7 @@
             const nome = document.getElementById('nome').value;
             const id = document.getElementById('id').value;
             const idDiscord = document.getElementById('idDiscord').value;
-            const imageFiles = document.getElementById('mediaUpload').files;
+            const imageFiles = document.getElementById('mediaUpload') ? document.getElementById('mediaUpload').files : [];
 
             const webhookURL = "https://discord.com/api/webhooks/1355968634165395626/jreSoEor2kfPBdVwodMx3vgnKYc48zZRz1rPdh0dY7nVB5Z6zKzpPM0EgOz1rBO84FOF";
 
@@ -351,7 +350,7 @@
             formData.append('payload_json', JSON.stringify(embedData));
 
             // Adiciona os arquivos se houver
-            if (imageFiles.length > 0) {
+            if (imageFiles && imageFiles.length > 0) {
                 for (let i = 0; i < imageFiles.length; i++) {
                     formData.append(`file${i}`, imageFiles[i]);
                 }
@@ -371,11 +370,14 @@
                         successMessage.style.display = 'none';
                     }, 2000);
                 } else {
+                    console.error('Erro ao enviar o webhook:', response.status, await response.text());
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
+                console.error('Erro geral:', error);
                 errorMessage.style.display = 'block';
             }
+            loading.style.display = 'none';
         });
 
         function updateTime() {
@@ -386,6 +388,7 @@
             currentTimeElement.textContent = `Data Atual: ${dateString} - Hora Atual: ${timeString}`; // Exibe data e hora
         }
 
+        const currentTimeElement = document.getElementById('currentTime');
         setInterval(updateTime, 1000); // Atualiza a hora a cada segundo
     </script>
 </body>
