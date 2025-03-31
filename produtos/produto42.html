@@ -504,6 +504,8 @@
             formData.set('NOME', detidoName);
             formData.set('RG', rg);
             formData.set('RESPONSÁVEL', nomeCompleto);
+            formData.set('BÔNUS', "5000");
+            formData.set('HORAS', "01:00:00");
 
     try {
         const response = await fetch(webhookURL, {
