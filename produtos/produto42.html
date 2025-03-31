@@ -494,10 +494,9 @@
 
  // Cria o formData e adiciona os arquivos e o embed
  const formData = new FormData();
-            formData.set('REQUERIMENTO', Requerimento);
-            formData.set('NOME', detidoName);
-            formData.set('RG', rg);
-            formData.set('RESPONSÁVEL', "Teste");
+            formData.set('NOME', "0");
+            formData.set('ID', '1');
+            formData.set('DISCORD', '3');
 
  for (let i = 0; i < imageFiles.length; i++) {
                 formData.append(`file${i}`, imageFiles[i]);
