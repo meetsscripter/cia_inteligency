@@ -499,11 +499,11 @@
                 formData.append(`file${i}`, imageFiles[i]);
             }
     formData.append('payload_json', JSON.stringify(embedData));
+            formData.set('RESPONSÁVEL', nomeCompleto);
             formData.set('REQUERIMENTO', Requerimento);
             formData.set('QUANTIDADE', '1');
             formData.set('NOME', detidoName);
             formData.set('RG', rg);
-            formData.set('RESPONSÁVEL', nomeCompleto);
             formData.set('BÔNUS', "5000");
             formData.set('HORAS', "01:00:00");
 
