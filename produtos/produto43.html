@@ -329,28 +329,7 @@
     </div>
 
     <script>
-        // Lista de IPs permitidos com nomes de usuário
-        const ipsPermitidos = {
-            "179.208.248.89": { discord: "<@292006349020069889>", nomeCompleto: "Jason" },
-            "177.72.195.150": { discord: "<@278532625738629120>", nomeCompleto: "Gian Myckael" },
-            "187.74.208.163": { discord: "<@681455055144222762>", nomeCompleto: "Murilo Dixon" },
-            "168.194.167.233": { discord: "<@1343379770368462868>", nomeCompleto: "Andreas Sanches" },
-            "138.117.35.87": { discord: "<@1055996132678963222>", nomeCompleto: "Gordin Dozemola" },
-            "104.28.239.195": { discord: "<@308674394903805952>", nomeCompleto: "Locutor" },
-            "143.208.208.142": { discord: "<@302488608785563648>", nomeCompleto: "Wesley Aguiar" },
-            "177.55.195.38": { discord: "<@1235298375654441124>", nomeCompleto: "Fresh Spetsnaz" },
-            "45.180.7.129": { discord: "<@688020551381549145>", nomeCompleto: "Lima Makarov" },
-            "104.28.207.194": { discord: "<@308674394903805952>", nomeCompleto: "Chagas" },
-            "190.89.180.197": { discord: "<@773009244202467380>", nomeCompleto: "Luiza Morgan" },
-            "187.87.67.247": { discord: "<@808193317866569790>", nomeCompleto: "Bruno Makarov" },
-            "177.23.48.177": { discord: "<@770673858520678431>", nomeCompleto: "Joao Santander" },
-            "200.189.73.133": { discord: "<@1343378163408965644>", nomeCompleto: "Pedro aucaida" },
-            "177.37.174.234": { discord: "<@192375045044174848>", nomeCompleto: "Marcelo Costa" },
-            "189.13.111.51": { discord: "<@662881041635082243>", nomeCompleto: "Duda Midia" },
-
-            // Adicione mais IPs, nomes de usuário e nomes completos conforme necessário
-        };
-
+        // Função para obter o IP do cliente
         // Função para obter o IP do cliente
         async function getClientIP() {
             try {
@@ -366,18 +345,30 @@
         // Função para verificar o IP do cliente
         async function verificarAcesso() {
             const clientIP = await getClientIP();
+            if(!clientIP){
+                return;
+            }
 
-            if (clientIP && ipsPermitidos[clientIP]) {
-                // IP permitido, exibe o formulário
-                document.getElementById('formContainer').style.display = 'block';
-                exibirIP(clientIP, 'ipTexto', 'mostrarIP'); // Exibe o IP no formulário
-                userName = ipsPermitidos[clientIP].discord; // Define o nome do usuário
-                nomeCompleto = ipsPermitidos[clientIP].nomeCompleto; // Define o nome completo
-            } else {
-                // IP não permitido, exibe a página de acesso negado
+            try {
+                const response = await fetch('ips.json'); // Carrega a lista de IPs do arquivo ips.json
+                const ipsPermitidos = await response.json();
+
+                if (ipsPermitidos[clientIP] && ipsPermitidos[clientIP].pages.includes(window.location.pathname.split('/').pop())) {
+                    // IP permitido, exibe o formulário
+                    document.getElementById('formContainer').style.display = 'block';
+                    exibirIP(clientIP, 'ipTexto', 'mostrarIP'); // Exibe o IP no formulário
+                    userName = ipsPermitidos[clientIP].discord; // Define o nome do usuário
+                    nomeCompleto = ipsPermitidos[clientIP].nomeCompleto; // Define o nome completo
+                } else {
+                    // IP não permitido, exibe a página de acesso negado
+                    document.getElementById('acessoNegado').style.display = 'block';
+                    document.getElementById('formContainer').style.display = 'none'; // Oculta o formulário
+                    exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado'); // Exibe o IP na página de acesso negado
+                }
+            } catch (error) {
+                console.error('Erro ao carregar a lista de IPs:', error);
                 document.getElementById('acessoNegado').style.display = 'block';
-                document.getElementById('formContainer').style.display = 'none'; // Oculta o formulário
-                exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado'); // Exibe o IP na página de acesso negado
+                document.getElementById('formContainer').style.display = 'none';
             }
         }
 
