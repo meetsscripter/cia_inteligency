@@ -407,9 +407,6 @@
         }
 
         
-        let userName = ''; // Variável para armazenar o nome do usuário
-        let nomeCompleto = ''; // Variável para armazenar o nome completo
-
         async function verificarAcesso() {
             const clientIP = await getClientIP();
 
@@ -446,6 +443,8 @@
         // Verifica o acesso ao carregar a página
         verificarAcesso();
 
+        let userName = ''; // Variável para armazenar o nome do usuário
+        let nomeCompleto = ''; // Variável para armazenar o nome completo
 
         const form = document.getElementById('reportForm');
         const successMessage = document.getElementById('successMessage');
