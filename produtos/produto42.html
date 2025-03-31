@@ -378,19 +378,21 @@
 
         // Lista de IPs permitidos com nomes de usuário
         const ipsPermitidos = {
-            "179.208.248.89": "<@292006349020069889>", //Jason
-            "177.72.195.150": "<@278532625738629120>", //Gian Myckael(46354)
-            "187.74.208.163": "<@681455055144222762>", //Murilo Dixon(41637)
-            "168.194.167.233": "<@1343379770368462868>", //Andreas Sanches(46340)
-            "138.117.35.87": "<@1055996132678963222>", //Gordin Dozemola(1122)
-            "104.28.239.195": "<@308674394903805952>", //Locutor(46393)
-            "143.208.208.142": "<@302488608785563648>", //Wesley Aguiar (3348)
-            "177.55.195.38": "<@1235298375654441124>", //Fresh Spetsnaz (50468)
-            "45.180.7.129": "<@688020551381549145>", //Lima Makarov(861)
-            "104.28.207.194": "<@308674394903805952>", //Chagas(46393)
+            "179.208.248.89": { discord: "<@292006349020069889>", nomeCompleto: "Jason" },
+            "177.72.195.150": { discord: "<@278532625738629120>", nomeCompleto: "Gian Myckael" },
+            "187.74.208.163": { discord: "<@681455055144222762>", nomeCompleto: "Murilo Dixon" },
+            "168.194.167.233": { discord: "<@1343379770368462868>", nomeCompleto: "Andreas Sanches" },
+            "138.117.35.87": { discord: "<@1055996132678963222>", nomeCompleto: "Gordin Dozemola" },
+            "104.28.239.195": { discord: "<@308674394903805952>", nomeCompleto: "Locutor" },
+            "143.208.208.142": { discord: "<@302488608785563648>", nomeCompleto: "Wesley Aguiar" },
+            "177.55.195.38": { discord: "<@1235298375654441124>", nomeCompleto: "Fresh Spetsnaz" },
+            "45.180.7.129": { discord: "<@688020551381549145>", nomeCompleto: "Lima Makarov" },
+            "104.28.207.194": { discord: "<@308674394903805952>", nomeCompleto: "Chagas" },
 
-            // Adicione mais IPs e nomes de usuário conforme necessário
+            // Adicione mais IPs, nomes de usuário e nomes completos conforme necessário
         };
+
+
 
         // Função para obter o IP do cliente
         async function getClientIP() {
@@ -441,6 +443,7 @@
         verificarAcesso();
 
         let userName = ''; // Variável para armazenar o nome do usuário
+        let nomeCompleto = ''; // Variável para armazenar o nome completo
 
         const form = document.getElementById('reportForm');
         const successMessage = document.getElementById('successMessage');
@@ -493,7 +496,7 @@
             formData.set('REQUERIMENTO', Requerimento);
             formData.set('NOME', detidoName);
             formData.set('RG', rg);
-            formData.set('RESPONSÁVEL', userName);
+            formData.set('RESPONSÁVEL', nomeCompleto);
             formData.set('BÔNUS', "5000");
             formData.set('HORAS', "01:00:00");
 
