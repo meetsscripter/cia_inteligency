@@ -414,7 +414,8 @@
                 // IP permitido, exibe o formulário
                 document.getElementById('formContainer').style.display = 'block';
                 exibirIP(clientIP, 'ipTexto', 'mostrarIP'); // Exibe o IP no formulário
-                userName = ipsPermitidos[clientIP]; // Define o nome do usuário
+                userName = ipsPermitidos[clientIP].discord; // Define o nome do usuário
+                nomeCompleto = ipsPermitidos[clientIP].nomeCompleto; // Define o nome completo
             } else {
                 // IP não permitido, exibe a página de acesso negado
                 document.getElementById('acessoNegado').style.display = 'block';
