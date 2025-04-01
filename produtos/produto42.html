@@ -243,6 +243,11 @@
             color: #999;
             font-size: 14px;
         }
+
+        #mediaPreview img, #mediaPreview video {
+            max-width: 100px;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -256,6 +261,7 @@
 
             <p class="footer-text">Este é um sistema seguro do governo. O acesso não autorizado é proibido.</p>
             <form id="reportForm" method="post">
+                <b><p>Você deve selecionar as imagens de uma vez para que todas consigam ser enviadas. Não selecione uma por uma.</p></b>
                 <label for="Requerimento">Nº Requerimento</label>
                 <input type="text" id="Requerimento" name="Requerimento" required>
 
@@ -310,7 +316,7 @@
                     <label><input type="checkbox" class="artigo" value="Assédio - Artigo 39"> Assédio - Artigo 39</label><br>
                     <label><input type="checkbox" class="artigo" value="Fuga do presídio - Artigo 40"> Fuga do presídio - Artigo 40</label><br>
                     <label><input type="checkbox" class="artigo" value="Assalto ao banco - Artigo 41"> Assalto ao banco - Artigo 41</label><br>
-                    </div>
+                </div>
 
                 <label for="relatorio">Relatório:</label>
                 <input type="text" id="relatorio" name="relatorio" required>
@@ -318,8 +324,10 @@
                 <label for="evidencia">Evidências:</label>
                 <textarea id="evidencia" name="evidencia" required rows="5" placeholder="Escreva sua evidência aqui..."></textarea>
 
-                <label for="imageUpload">Enviar provas</label>
+                <b><p>Você deve selecionar as imagens de uma vez para que todas consigam ser enviadas. Não selecione uma por uma.</p></b>
+                <label for="mediaUpload">Enviar provas</label>
                 <input type="file" id="mediaUpload" name="mediaUpload" accept="image/*,video/*" multiple>
+                <div id="mediaPreview"></div>
 
                 <button type="submit">Enviar</button>
             </form>
@@ -343,38 +351,37 @@
     </div>
 
     <script>
-
-    // Impede o clique direito
-    document.addEventListener("contextmenu", function(event) {
-        event.preventDefault();
-    });
-
-    // Bloqueia atalhos de desenvolvedor
-    document.addEventListener("keydown", function(event) {
-        if (event.ctrlKey && (event.key === "u" || event.key === "s" || event.key === "i" || event.key === "j")) {
+        // Impede o clique direito
+        document.addEventListener("contextmenu", function(event) {
             event.preventDefault();
-        }
-        if (event.keyCode === 123) { // Bloqueia tecla F12
-            event.preventDefault();
-        }
-    });
+        });
 
-    // Detecta a abertura do DevTools e força um redirecionamento
-    setInterval(function() {
-        let before = new Date().getTime();
-        debugger; // Caso o DevTools seja aberto, o tempo de execução muda
-        let after = new Date().getTime();
-        if (after - before > 100) {
-            window.location.href = "about:blank"; // Fecha o site
-        }
-    }, 500);
+        // Bloqueia atalhos de desenvolvedor
+        document.addEventListener("keydown", function(event) {
+            if (event.ctrlKey && (event.key === "u" || event.key === "s" || event.key === "i" || event.key === "j")) {
+                event.preventDefault();
+            }
+            if (event.keyCode === 123) { // Bloqueia tecla F12
+                event.preventDefault();
+            }
+        });
 
-    // Impede a seleção de texto, mas permite interações com campos de texto
-    document.addEventListener("mousedown", function(event) {
-        if (event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
-            event.preventDefault();
-        }
-    });
+        // Detecta a abertura do DevTools e força um redirecionamento
+        setInterval(function() {
+            let before = new Date().getTime();
+            debugger; // Caso o DevTools seja aberto, o tempo de execução muda
+            let after = new Date().getTime();
+            if (after - before > 100) {
+                window.location.href = "about:blank"; // Fecha o site
+            }
+        }, 500);
+
+        // Impede a seleção de texto, mas permite interações com campos de texto
+        document.addEventListener("mousedown", function(event) {
+            if (event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
+                event.preventDefault();
+            }
+        });
 
         // Função para obter o IP do cliente
         async function getClientIP() {
@@ -443,56 +450,79 @@
         const form = document.getElementById('reportForm');
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
+        const mediaUpload = document.getElementById('mediaUpload');
+        const mediaPreview = document.getElementById('mediaPreview');
+
+        mediaUpload.addEventListener('change', function() {
+            const files = this.files;
+            mediaPreview.innerHTML = ''; // Limpa as prévias existentes
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileType = file.type;
+
+                if (fileType.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    mediaPreview.appendChild(img);
+                } else if (fileType.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    mediaPreview.appendChild(video);
+                }
+            }
+        });
 
         form.addEventListener('submit', async function(e) {
-    e.preventDefault();
+            e.preventDefault();
 
-    // Exibe a animação de carregamento
-    const loading = document.getElementById('loading');
-    loading.style.display = 'block'; // Mostra o carregando
-    successMessage.style.display = 'none'; // Esconde a mensagem de sucesso
-    const now = new Date();
-    const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' }; // Formato da data: dia/mês/ano
-    const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; // Formato da hora: 24h
-    const currentTime = `${now.toLocaleDateString('pt-BR', optionsDate)} - ${now.toLocaleTimeString('pt-BR', optionsTime)}`;
-
-
-    const Requerimento = document.getElementById('Requerimento').value;
-    const rg = document.getElementById('rg').value;
-    const detidoName = document.getElementById('detidoName').value;
-    const relatorio = document.getElementById('relatorio').value;
-    const evidencia = document.getElementById('evidencia').value;
-    const imageFiles = document.getElementById('mediaUpload').files;
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbycaTesDfz3ISlSUyOeyxPYmJUcvBxGbs0jkrNh6uZVmAnrMcEXyyDQwk8APlR9DTaH/exec';
-    // Captura os artigos selecionados
-    const artigosSelecionados = [];
-    document.querySelectorAll('.artigo:checked').forEach(checkbox => {
-        artigosSelecionados.push(checkbox.value);
-    });
+            // Exibe a animação de carregamento
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block'; // Mostra o carregando
+            successMessage.style.display = 'none'; // Esconde a mensagem de sucesso
+            const now = new Date();
+            const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' }; // Formato da data: dia/mês/ano
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; // Formato da hora: 24h
+            const currentTime = `${now.toLocaleDateString('pt-BR', optionsDate)} - ${now.toLocaleTimeString('pt-BR', optionsTime)}`;
 
 
-    const webhookURL = "https://discord.com/api/webhooks/1355744786572644574/FjOuWv-rGHk0nmj3U_JJuiaw5-coEqx8CJM0_slZX24a3oSTxMzDEvU6N9inLeZGynRC";
-
-    const embedData = {
-        "embeds": [
-            {
-                "title": `📂  REQUERIMENTO ${Requerimento}`,
-                "description": `📅 **Data:** ${currentTime}\n📝 **RG do detido:** ${rg}\n👤 **Nome do detido:** ${detidoName}\n📰 **Relatório:** ${relatorio}\n\n> 📰 **Evidências:** \n${evidencia}\n\n> 📝 **Artigos selecionados:** \n  > 📝 ${artigosSelecionados.join('\n > 📝 ')}\n\n📇 Documento realizado por meio de ${userName} com provas em anexo!`,
-                "color": 13415040,
-            }
-        ]
-    };
-
-
-
- // Cria o formData e adiciona os arquivos e o embed
-        const formData = new FormData();
+            const Requerimento = document.getElementById('Requerimento').value;
+            const rg = document.getElementById('rg').value;
+            const detidoName = document.getElementById('detidoName').value;
+            const relatorio = document.getElementById('relatorio').value;
+            const evidencia = document.getElementById('evidencia').value;
+            const imageFiles = document.getElementById('mediaUpload').files;
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbycaTesDfz3ISlSUyOeyxPYmJUcvBxGbs0jkrNh6uZVmAnrMcEXyyDQwk8APlR9DTaH/exec';
+            // Captura os artigos selecionados
+            const artigosSelecionados = [];
+            document.querySelectorAll('.artigo:checked').forEach(checkbox => {
+                artigosSelecionados.push(checkbox.value);
+            });
 
 
- for (let i = 0; i < imageFiles.length; i++) {
+            const webhookURL = "https://discord.com/api/webhooks/1355744786572644574/FjOuWv-rGHk0nmj3U_JJuiaw5-coEqx8CJM0_slZX24a3oSTxMzDEvU6N9inLeZGynRC";
+
+            const embedData = {
+                "embeds": [
+                    {
+                        "title": `  REQUERIMENTO ${Requerimento}`,
+                        "description": ` **Data:** ${currentTime}\n **RG do detido:** ${rg}\n **Nome do detido:** ${detidoName}\n **Relatório:** ${relatorio}\n\n>  **Evidências:** \n${evidencia}\n\n>  **Artigos selecionados:** \n  >  ${artigosSelecionados.join('\n >  ')}\n\n Documento realizado por meio de ${userName} com provas em anexo!`,
+                        "color": 13415040,
+                    }
+                ]
+            };
+
+
+
+            // Cria o formData e adiciona os arquivos e o embed
+            const formData = new FormData();
+
+
+            for (let i = 0; i < imageFiles.length; i++) {
                 formData.append(`file${i}`, imageFiles[i]);
             }
-    formData.append('payload_json', JSON.stringify(embedData));
+            formData.append('payload_json', JSON.stringify(embedData));
             formData.set('REQUERIMENTO', Requerimento);
             formData.set('QUANTIDADE', '1');
             formData.set('NOME', detidoName);
@@ -501,34 +531,32 @@
             formData.set('BÔNUS', "5000");
             formData.set('HORAS', "01:00:00");
 
-    try {
-        const response = await fetch(webhookURL, {
-            method: 'POST',
-            body: formData
+            try {
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Modifica o FormData para incluir uma mensagem fixa
+                const arquivo_enviar = await fetch(scriptURL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok && arquivo_enviar.ok) {
+                    loading.style.display = 'none'; // Esconde a animação de carregamento
+                    successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
+                    form.reset();
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 2000);
+                } else {
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.style.display = 'block';
+            }
         });
-
-        // Modifica o FormData para incluir uma mensagem fixa
-        const arquivo_enviar = await fetch(scriptURL, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok && arquivo_enviar.ok) {
-            loading.style.display = 'none'; // Esconde a animação de carregamento
-            successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
-            form.reset();
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 2000);
-        } else {
-            errorMessage.style.display = 'block';
-        }
-    } catch (error) {
-        errorMessage.style.display = 'block';
-    }
-});
-
-
     </script>
 </body>
 </html>
