@@ -3,35 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <title>Relatório de Inteligência</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes moveLine {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(100%); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     body {
       margin: 0;
       padding: 40px;
       background-color: #0d1117;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Courier New', Courier, monospace;
       color: #c9d1d9;
     }
 
     h1 {
       text-align: center;
-      font-size: 36px;
+      font-size: 48px;
       margin-bottom: 40px;
       color: #58a6ff;
+      text-shadow: 0 0 8px #58a6ff;
+    }
+
+    .resumo {
+      background-color: #0f1a25;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(88,166,255,0.4);
+      text-align: center;
+      margin-bottom: 50px;
+      font-size: 24px;
+      animation: flicker 2s infinite;
+    }
+
+    .resumo span {
+      display: block;
+      font-size: 24px;
+      margin: 14px 0;
+    }
+
+    .resumo .bonus {
+      color: #1fdf64;
+      font-weight: bold;
+      font-size: 28px;
     }
 
     .dashboard {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
       margin-bottom: 50px;
     }
 
     .card {
-      background-color: #161b22;
+      background-color: #0f1a25;
       border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 12px rgba(88,166,255,0.2);
+      padding: 25px;
+      box-shadow: 0 0 18px rgba(88,166,255,0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -40,89 +82,72 @@
     }
 
     .card:hover {
-      box-shadow: 0 0 18px rgba(88,166,255,0.4);
+      box-shadow: 0 0 24px rgba(88,166,255,0.6);
     }
 
     .card h2 {
-      font-size: 20px;
+      font-size: 22px;
       color: #58a6ff;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .card p {
-      margin: 4px 0;
-      font-size: 16px;
+      margin: 6px 0;
+      font-size: 18px;
     }
 
-    .charts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      margin-top: 50px;
+    .scan-line {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(to right, #58a6ff, transparent);
+      animation: moveLine 2s linear infinite;
+      margin-bottom: 20px;
     }
 
-    .chart-container {
-      background-color: #161b22;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 12px rgba(88,166,255,0.2);
-      height: auto;
-    }
-
-    canvas {
-      max-width: 100%;
-      max-height: 300px;
-    }
-
-    .ranking {
-      margin-top: 40px;
-      background-color: #161b22;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 12px rgba(88,166,255,0.2);
-    }
-
-    .ranking h2 {
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #0d1117;
       color: #58a6ff;
-      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 28px;
+      z-index: 9999;
+      animation: fadeOut 1s ease forwards;
+      animation-delay: 3s;
     }
 
-    .ranking ol {
-      padding-left: 20px;
-    }
-
-    .ranking li {
-      margin: 8px 0;
+    .loading-text {
+      animation: flicker 2s infinite;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="formContainer">
+<div id="formContainer" style="display: none;">
+  <div class="loading-screen" id="loading">
+    <img src="https://i.gifer.com/ZKZg.gif" alt="Carregando..." width="120">
+    <div class="loading-text">Carregando dados secretos...</div>
     <p id="ipCensurado">IP: <span id="ipTexto"></span> <span id="mostrarIP">(Mostrar)</span></p>
-    <h1>Relatório de Inteligência</h1>
-
-    <div id="lista" class="dashboard"></div>
-
-    <div class="charts">
-      <div class="chart-container"><canvas id="bonusChart"></canvas></div>
-      <div class="chart-container"><canvas id="horasChart"></canvas></div>
-      <div class="chart-container"><canvas id="registrosChart"></canvas></div>
-    </div>
-
-    <div class="ranking">
-      <h2>Ranking de Bonificação</h2>
-      <ol id="rankingLista"></ol>
-    </div>
   </div>
 
-  <div id="acessoNegado" style="display:none;">
-    <div class="container">
-        <h1>Acesso Negado</h1>
-        <p>Seu IP não está na lista de IPs permitidos.</p>
-        <p id="ipCensuradoNegado">IP: <span id="ipTextoNegado"></span> <span id="mostrarIPNegado">(Mostrar)</span></p>
-    </div>
+  <h1 style="animation: fadeIn 2s forwards 3s; opacity: 0;">Relatório de Inteligência</h1>
+  <div class="scan-line" style="animation: moveLine 2s linear infinite, fadeIn 2s forwards 3s; opacity: 0;"></div>
+  <div id="resumo" class="resumo" style="animation: fadeIn 2s forwards 3s; opacity: 0;"></div>
+  <div id="lista" class="dashboard" style="animation: fadeIn 2s forwards 3.5s; opacity: 0;"></div>
+  </div>
 </div>
-
+<div id="acessoNegado" style="display:none;">
+  <div class="container">
+      <h1>Acesso Negado</h1>
+      <p>Seu IP não está na lista de IPs permitidos.</p>
+      <p id="ipCensuradoNegado">IP: <span id="ipTextoNegado"></span> <span id="mostrarIPNegado">(Mostrar)</span></p>
+    </div>
 
   <script>
 
@@ -172,37 +197,33 @@
 
         // Função para verificar o IP do cliente
         async function verificarAcesso() {
-    const clientIP = await getClientIP();
-    console.log('IP do cliente:', clientIP);
+            const clientIP = await getClientIP();
+            if(!clientIP){
+                return;
+            }
 
-    if (!clientIP) {
-        return;
-    }
+            try {
+                const response = await fetch('ips.json'); // Carrega a lista de IPs do arquivo ips.json
+                const ipsPermitidos = await response.json();
 
-    try {
-        const response = await fetch('ips.json');
-        const ipsPermitidos = await response.json();
-        console.log('Conteúdo de ips.json:', ipsPermitidos);
-        console.log('Pagina atual:', window.location.pathname.split('/').pop());
-
-        if (ipsPermitidos[clientIP] && ipsPermitidos[clientIP].pages.includes(window.location.pathname.split('/').pop())) {
-            // IP permitido
-            document.getElementById('formContainer').style.display = 'block';
-            exibirIP(clientIP, 'ipTexto', 'mostrarIP');
-            userName = ipsPermitidos[clientIP].discord;
-            nomeCompleto = ipsPermitidos[clientIP].nomeCompleto;
-        } else {
-            // IP não permitido
-            document.getElementById('acessoNegado').style.display = 'block';
-            document.getElementById('formContainer').style.display = 'none';
-            exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado');
-        }
-    } catch (error) {
+                if (ipsPermitidos[clientIP] && ipsPermitidos[clientIP].pages.includes(window.location.pathname.split('/').pop())) {
+                    // IP permitido, exibe o formulário
+                    document.getElementById('formContainer').style.display = 'block';
+                    exibirIP(clientIP, 'ipTexto', 'mostrarIP'); // Exibe o IP no formulário
+                    userName = ipsPermitidos[clientIP].discord; // Define o nome do usuário
+                    nomeCompleto = ipsPermitidos[clientIP].nomeCompleto; // Define o nome completo
+                } else {
+                    // IP não permitido, exibe a página de acesso negado
+                    document.getElementById('acessoNegado').style.display = 'block';
+                    document.getElementById('formContainer').style.display = 'none'; // Oculta o formulário
+                    exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado'); // Exibe o IP na página de acesso negado
+                }
+            } catch (error) {
                 console.error('Erro ao carregar a lista de IPs:', error);
                 document.getElementById('acessoNegado').style.display = 'block';
                 document.getElementById('formContainer').style.display = 'none';
             }
-}
+        }
 
         // Função para exibir o IP e configurar a alternância
         function exibirIP(clientIP, ipTextoId, mostrarIPId) {
@@ -222,6 +243,7 @@
 
         // Verifica o acesso ao carregar a página
         verificarAcesso();
+
         let userName = ''; // Variável para armazenar o nome do usuário
         let nomeCompleto = ''; // Variável para armazenar o nome completo
 
@@ -229,16 +251,13 @@
 
     function somarHoras(horas) {
       let totalSegundos = 0;
-
       horas.forEach(horaStr => {
-        const [h, m, s] = horaStr.split(":").map(Number);
+        const [h, m, s] = horaStr.split(":" ).map(Number);
         totalSegundos += h * 3600 + m * 60 + s;
       });
-
       const h = Math.floor(totalSegundos / 3600);
       const m = Math.floor((totalSegundos % 3600) / 60);
       const s = totalSegundos % 60;
-
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
@@ -246,8 +265,12 @@
       .then(res => res.json())
       .then(dados => {
         const lista = document.getElementById("lista");
-        const rankingLista = document.getElementById("rankingLista");
+        const resumo = document.getElementById("resumo");
         const totais = {};
+
+        let totalBonusGeral = 0;
+        let totalHorasGeralSegundos = 0;
+        let totalRegistrosGeral = 0;
 
         dados.forEach(item => {
           const nome = item["RESPONSÁVEL"]?.trim() || "Desconhecido";
@@ -261,80 +284,36 @@
           totais[nome].bonusTotal += bonus;
           totais[nome].horas.push(horasStr);
           totais[nome].quantidade += 1;
+
+          totalBonusGeral += bonus;
+          const [h, m, s] = horasStr.split(":" ).map(Number);
+          totalHorasGeralSegundos += h * 3600 + m * 60 + s;
+          totalRegistrosGeral += 1;
         });
 
-        const nomes = [], bonusValores = [], horasSomas = [], registrosValores = [];
-        const ranking = Object.entries(totais).sort((a, b) => b[1].bonusTotal - a[1].bonusTotal);
+        const totalHorasFinal = `${String(Math.floor(totalHorasGeralSegundos / 3600)).padStart(2, '0')}:${String(Math.floor((totalHorasGeralSegundos % 3600) / 60)).padStart(2, '0')}:${String(totalHorasGeralSegundos % 60).padStart(2, '0')}`;
 
-        ranking.forEach(([nome, info]) => {
+        resumo.innerHTML = `
+          <span class="bonus">Bônus: ${totalBonusGeral.toFixed(2)}</span>
+          <span>Horas: ${totalHorasFinal}</span>
+          <span>Registros: ${totalRegistrosGeral}</span>
+        `;
+
+        Object.entries(totais).forEach(([nome, info]) => {
           const somaHoras = somarHoras(info.horas);
-
           const div = document.createElement("div");
           div.className = "card";
-
           div.innerHTML = `
             <h2>${nome}</h2>
             <p><strong>Bônus Total:</strong> ${info.bonusTotal}</p>
             <p><strong>Horas Totais:</strong> ${somaHoras}</p>
             <p><strong>Registros:</strong> ${info.quantidade}</p>
           `;
-
           lista.appendChild(div);
-          nomes.push(nome);
-          bonusValores.push(info.bonusTotal);
-          horasSomas.push(info.horas.length);
-          registrosValores.push(info.quantidade);
-
-          const li = document.createElement("li");
-          li.textContent = `${nome} — ${info.bonusTotal}$`;
-          rankingLista.appendChild(li);
         });
 
-        const chartOptions = {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#c9d1d9' } },
-            x: { ticks: { color: '#c9d1d9' } }
-          }
-        };
-
-        new Chart(document.getElementById('bonusChart'), {
-          type: 'bar',
-          data: {
-            labels: nomes,
-            datasets: [{ label: 'Bônus por Responsável', data: bonusValores, backgroundColor: '#58a6ff' }]
-          },
-          options: chartOptions
-        });
-
-        new Chart(document.getElementById('horasChart'), {
-          type: 'pie',
-          data: {
-            labels: nomes,
-            datasets: [{
-              label: 'Entradas de Horas por Responsável',
-              data: horasSomas,
-              backgroundColor: nomes.map((_, i) => `hsl(${i * 40}, 70%, 60%)`)
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { labels: { color: '#c9d1d9' } }
-            }
-          }
-        });
-
-        new Chart(document.getElementById('registrosChart'), {
-          type: 'bar',
-          data: {
-            labels: nomes,
-            datasets: [{ label: 'Número de Registros', data: registrosValores, backgroundColor: '#34d058' }]
-          },
-          options: chartOptions
-        });
+        // Esconde a tela de loading após os dados serem carregados
+        document.getElementById("loading").style.display = "none";
       })
       .catch(error => {
         console.error("Erro ao carregar dados:", error);
