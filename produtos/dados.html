@@ -7,185 +7,157 @@
   <style>
     body {
       margin: 0;
-      padding: 20px;
-      background: radial-gradient(ellipse at center, #0a0f1a 0%, #000000 100%);
-      font-family: 'Courier New', Courier, monospace;
+      padding: 40px;
+      background-color: #0d1117;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #c9d1d9;
     }
 
     h1 {
       text-align: center;
-      color: #58a6ff;
-      font-size: 28px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      font-size: 36px;
       margin-bottom: 40px;
+      color: #58a6ff;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 50px;
     }
 
     .card {
       background-color: #161b22;
-      border: 1px solid #30363d;
-      border-left: 4px solid #58a6ff;
-      padding: 16px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      box-shadow: 0 0 6px rgba(88,166,255,0.4);
-      animation: fadeIn 0.6s ease forwards;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 12px rgba(88,166,255,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 0 18px rgba(88,166,255,0.4);
     }
 
     .card h2 {
-      margin: 0 0 8px 0;
       font-size: 20px;
       color: #58a6ff;
+      margin-bottom: 10px;
     }
 
     .card p {
       margin: 4px 0;
-      font-size: 15px;
-    }
-
-    #lista {
-      max-width: 800px;
-      margin: 0 auto 50px;
+      font-size: 16px;
     }
 
     .charts {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 30px;
+      margin-top: 50px;
+    }
+
+    .chart-container {
+      background-color: #161b22;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 12px rgba(88,166,255,0.2);
+      height: auto;
     }
 
     canvas {
-      background: #0d1117;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(88,166,255,0.3);
-      animation: fadeIn 1s ease forwards;
-      max-width: 300px;
+      max-width: 100%;
       max-height: 300px;
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: translateY(0); }
+    .ranking {
+      margin-top: 40px;
+      background-color: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(88,166,255,0.2);
     }
 
-    #loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      flex-direction: column;
+    .ranking h2 {
       color: #58a6ff;
-      font-size: 24px;
-      font-weight: bold;
-      animation: pulse 1.5s infinite;
+      margin-bottom: 10px;
     }
 
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
+    .ranking ol {
+      padding-left: 20px;
     }
 
-    #loader img {
-      width: 120px;
-      margin-bottom: 20px;
-      filter: grayscale(1) brightness(1.2);
+    .ranking li {
+      margin: 8px 0;
     }
-
-    #ipCensurado {
-            cursor: pointer;
-            color: #999;
-            font-size: 14px;
-        }
-        
-        .container {
-            background-color: rgba(30, 30, 30, 0.85);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            width: 450px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .container img {
-            width: 180px;
-            margin-bottom: 30px;
-            filter: brightness(1.1);
-        }
-
   </style>
 </head>
 <body>
-    <div id="formContainer" style="display: none;">        
-            <div id="loader">
-                <img src="../imagem/Logo.png" alt="CIA Logo">
-                Carregando dados confidenciais...
-            </div>
-            <p id="ipCensurado">IP: <span id="ipTexto"></span> <span id="mostrarIP">(Mostrar)</span></p>
+  <div class="container" id="formContainer">
+    <p id="ipCensurado">IP: <span id="ipTexto"></span> <span id="mostrarIP">(Mostrar)</span></p>
+    <h1>Relatório de Inteligência</h1>
 
-            <h1>Relatório de Atividades</h1>
-            <div id="lista"></div>
+    <div id="lista" class="dashboard"></div>
 
-            <div class="charts">
-                <canvas id="bonusChart"></canvas>
-                <canvas id="horasChart"></canvas>
-                <canvas id="registrosChart"></canvas>
-            </div>
+    <div class="charts">
+      <div class="chart-container"><canvas id="bonusChart"></canvas></div>
+      <div class="chart-container"><canvas id="horasChart"></canvas></div>
+      <div class="chart-container"><canvas id="registrosChart"></canvas></div>
+    </div>
 
-        </div>
+    <div class="ranking">
+      <h2>Ranking de Bonificação</h2>
+      <ol id="rankingLista"></ol>
+    </div>
+  </div>
 
-    <div id="acessoNegado" style="display:none;">
-        <div class="container">
-            <h1>Acesso Negado</h1>
-            <p>Seu IP não está na lista de IPs permitidos.</p>
-            <p id="ipCensuradoNegado">IP: <span id="ipTextoNegado"></span> <span id="mostrarIPNegado">(Mostrar)</span></p>
-        </div>
+  <div id="acessoNegado" style="display:none;">
+    <div class="container">
+        <h1>Acesso Negado</h1>
+        <p>Seu IP não está na lista de IPs permitidos.</p>
+        <p id="ipCensuradoNegado">IP: <span id="ipTextoNegado"></span> <span id="mostrarIPNegado">(Mostrar)</span></p>
+    </div>
+</div>
+
 
   <script>
 
-    // Impede o clique direito
-    document.addEventListener("contextmenu", function(event) {
-        event.preventDefault();
-    });
-
-    // Bloqueia atalhos de desenvolvedor
-    document.addEventListener("keydown", function(event) {
-        if (event.ctrlKey && (event.key === "u" || event.key === "s" || event.key === "i" || event.key === "j")) {
+        // Impede o clique direito
+        document.addEventListener("contextmenu", function(event) {
             event.preventDefault();
-        }
-        if (event.keyCode === 123) { // Bloqueia tecla F12
-            event.preventDefault();
-        }
-    });
+        });
 
-    // Detecta a abertura do DevTools e força um redirecionamento
-    setInterval(function() {
-        let before = new Date().getTime();
-        debugger; // Caso o DevTools seja aberto, o tempo de execução muda
-        let after = new Date().getTime();
-        if (after - before > 100) {
-            window.location.href = "about:blank"; // Fecha o site
-        }
-    }, 500);
+        // Bloqueia atalhos de desenvolvedor
+        document.addEventListener("keydown", function(event) {
+            if (event.ctrlKey && (event.key === "u" || event.key === "s" || event.key === "i" || event.key === "j")) {
+                event.preventDefault();
+            }
+            if (event.keyCode === 123) { // Bloqueia tecla F12
+                event.preventDefault();
+            }
+        });
 
-    // Impede a seleção de texto, mas permite interações com campos de texto
-    document.addEventListener("mousedown", function(event) {
-        if (event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
-            event.preventDefault();
-        }
-    });
-        // Função para obter o IP do cliente
+        // Detecta a abertura do DevTools e força um redirecionamento
+        setInterval(function() {
+            let before = new Date().getTime();
+            debugger; // Caso o DevTools seja aberto, o tempo de execução muda
+            let after = new Date().getTime();
+            if (after - before > 100) {
+                window.location.href = "about:blank"; // Fecha o site
+            }
+        }, 500);
+
+        // Impede a seleção de texto, mas permite interações com campos de texto
+        document.addEventListener("mousedown", function(event) {
+            if (event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
+                event.preventDefault();
+            }
+        });
+
         // Função para obter o IP do cliente
         async function getClientIP() {
             try {
@@ -200,33 +172,37 @@
 
         // Função para verificar o IP do cliente
         async function verificarAcesso() {
-            const clientIP = await getClientIP();
-            if(!clientIP){
-                return;
-            }
+    const clientIP = await getClientIP();
+    console.log('IP do cliente:', clientIP);
 
-            try {
-                const response = await fetch('ips.json'); // Carrega a lista de IPs do arquivo ips.json
-                const ipsPermitidos = await response.json();
+    if (!clientIP) {
+        return;
+    }
 
-                if (ipsPermitidos[clientIP] && ipsPermitidos[clientIP].pages.includes(window.location.pathname.split('/').pop())) {
-                    // IP permitido, exibe o formulário
-                    document.getElementById('formContainer').style.display = 'block';
-                    exibirIP(clientIP, 'ipTexto', 'mostrarIP'); // Exibe o IP no formulário
-                    userName = ipsPermitidos[clientIP].discord; // Define o nome do usuário
-                    nomeCompleto = ipsPermitidos[clientIP].nomeCompleto; // Define o nome completo
-                } else {
-                    // IP não permitido, exibe a página de acesso negado
-                    document.getElementById('acessoNegado').style.display = 'block';
-                    document.getElementById('formContainer').style.display = 'none'; // Oculta o formulário
-                    exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado'); // Exibe o IP na página de acesso negado
-                }
-            } catch (error) {
+    try {
+        const response = await fetch('ips.json');
+        const ipsPermitidos = await response.json();
+        console.log('Conteúdo de ips.json:', ipsPermitidos);
+        console.log('Pagina atual:', window.location.pathname.split('/').pop());
+
+        if (ipsPermitidos[clientIP] && ipsPermitidos[clientIP].pages.includes(window.location.pathname.split('/').pop())) {
+            // IP permitido
+            document.getElementById('formContainer').style.display = 'block';
+            exibirIP(clientIP, 'ipTexto', 'mostrarIP');
+            userName = ipsPermitidos[clientIP].discord;
+            nomeCompleto = ipsPermitidos[clientIP].nomeCompleto;
+        } else {
+            // IP não permitido
+            document.getElementById('acessoNegado').style.display = 'block';
+            document.getElementById('formContainer').style.display = 'none';
+            exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado');
+        }
+    } catch (error) {
                 console.error('Erro ao carregar a lista de IPs:', error);
                 document.getElementById('acessoNegado').style.display = 'block';
                 document.getElementById('formContainer').style.display = 'none';
             }
-        }
+}
 
         // Função para exibir o IP e configurar a alternância
         function exibirIP(clientIP, ipTextoId, mostrarIPId) {
@@ -246,88 +222,91 @@
 
         // Verifica o acesso ao carregar a página
         verificarAcesso();
-
         let userName = ''; // Variável para armazenar o nome do usuário
         let nomeCompleto = ''; // Variável para armazenar o nome completo
 
     const API_URL = "https://script.google.com/macros/s/AKfycbyEGgkE55FQpA1teX4LF95f0nddkOWbHHfW1rNPuduq2OYOn4pe29FgMo57SATepEfS/exec";
 
-    function timeToSeconds(timeStr) {
-      const [hours, minutes, seconds] = timeStr.split(":" ).map(Number);
-      return (hours * 3600) + (minutes * 60) + seconds;
+    function somarHoras(horas) {
+      let totalSegundos = 0;
+
+      horas.forEach(horaStr => {
+        const [h, m, s] = horaStr.split(":").map(Number);
+        totalSegundos += h * 3600 + m * 60 + s;
+      });
+
+      const h = Math.floor(totalSegundos / 3600);
+      const m = Math.floor((totalSegundos % 3600) / 60);
+      const s = totalSegundos % 60;
+
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    function secondsToTime(totalSeconds) {
-      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-      const seconds = String(totalSeconds % 60).padStart(2, '0');
-      return `${hours}:${minutes}:${seconds}`;
-    }
-
-    fetch(`${API_URL}?t=${Date.now()}`)
+    fetch(API_URL)
       .then(res => res.json())
       .then(dados => {
-        document.getElementById("loader").style.display = "none";
-        const audio = document.getElementById("loading-audio");
-        if (audio) audio.pause();
-
         const lista = document.getElementById("lista");
+        const rankingLista = document.getElementById("rankingLista");
         const totais = {};
 
         dados.forEach(item => {
           const nome = item["RESPONSÁVEL"]?.trim() || "Desconhecido";
           const bonus = parseFloat(item["BÔNUS"]) || 0;
-          const horaStr = (item["HORAS"] || "00:00:00").trim();
-          const horaValida = /^\d{1,2}:\d{1,2}:\d{1,2}$/.test(horaStr) ? horaStr : "00:00:00";
-          const segundos = timeToSeconds(horaValida);
+          const horasStr = item["HORAS"]?.trim() || "00:00:00";
 
           if (!totais[nome]) {
-            totais[nome] = { bonusTotal: 0, segundosTotal: 0, quantidade: 0 };
+            totais[nome] = { bonusTotal: 0, horas: [], quantidade: 0 };
           }
 
           totais[nome].bonusTotal += bonus;
-          totais[nome].segundosTotal += segundos;
+          totais[nome].horas.push(horasStr);
           totais[nome].quantidade += 1;
         });
 
-        const nomes = [], bonusValores = [], horasValores = [], registrosValores = [];
+        const nomes = [], bonusValores = [], horasSomas = [], registrosValores = [];
+        const ranking = Object.entries(totais).sort((a, b) => b[1].bonusTotal - a[1].bonusTotal);
 
-        for (const nome in totais) {
+        ranking.forEach(([nome, info]) => {
+          const somaHoras = somarHoras(info.horas);
+
           const div = document.createElement("div");
           div.className = "card";
 
-          const horasFormatadas = secondsToTime(totais[nome].segundosTotal);
-
           div.innerHTML = `
             <h2>${nome}</h2>
-            <p>Total de Bônus: <strong>${totais[nome].bonusTotal}</strong></p>
-            <p>Quantidade de Registros: <strong>${totais[nome].quantidade}</strong></p>
+            <p><strong>Bônus Total:</strong> ${info.bonusTotal}</p>
+            <p><strong>Horas Totais:</strong> ${somaHoras}</p>
+            <p><strong>Registros:</strong> ${info.quantidade}</p>
           `;
 
           lista.appendChild(div);
           nomes.push(nome);
-          bonusValores.push(totais[nome].bonusTotal);
-          horasValores.push((totais[nome].segundosTotal / 3600).toFixed(2));
-          registrosValores.push(totais[nome].quantidade);
-        }
+          bonusValores.push(info.bonusTotal);
+          horasSomas.push(info.horas.length);
+          registrosValores.push(info.quantidade);
+
+          const li = document.createElement("li");
+          li.textContent = `${nome} — ${info.bonusTotal}$`;
+          rankingLista.appendChild(li);
+        });
+
+        const chartOptions = {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: '#c9d1d9' } },
+            x: { ticks: { color: '#c9d1d9' } }
+          }
+        };
 
         new Chart(document.getElementById('bonusChart'), {
           type: 'bar',
           data: {
             labels: nomes,
-            datasets: [{
-              label: 'Bônus por Responsável',
-              data: bonusValores,
-              backgroundColor: '#58a6ff'
-            }]
+            datasets: [{ label: 'Bônus por Responsável', data: bonusValores, backgroundColor: '#58a6ff' }]
           },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, ticks: { color: '#c9d1d9' } },
-              x: { ticks: { color: '#c9d1d9' } }
-            }
-          }
+          options: chartOptions
         });
 
         new Chart(document.getElementById('horasChart'), {
@@ -335,16 +314,15 @@
           data: {
             labels: nomes,
             datasets: [{
-              label: 'Horas por Responsável',
-              data: horasValores,
+              label: 'Entradas de Horas por Responsável',
+              data: horasSomas,
               backgroundColor: nomes.map((_, i) => `hsl(${i * 40}, 70%, 60%)`)
             }]
           },
           options: {
+            responsive: true,
             plugins: {
-              legend: {
-                labels: { color: '#c9d1d9' }
-              }
+              legend: { labels: { color: '#c9d1d9' } }
             }
           }
         });
@@ -353,25 +331,13 @@
           type: 'bar',
           data: {
             labels: nomes,
-            datasets: [{
-              label: 'Número de Registros',
-              data: registrosValores,
-              backgroundColor: '#34d058'
-            }]
+            datasets: [{ label: 'Número de Registros', data: registrosValores, backgroundColor: '#34d058' }]
           },
-          options: {
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, ticks: { color: '#c9d1d9' } },
-              x: { ticks: { color: '#c9d1d9' } }
-            }
-          }
+          options: chartOptions
         });
-
       })
       .catch(error => {
         console.error("Erro ao carregar dados:", error);
-        document.getElementById("loader").innerHTML = "<p>Erro ao carregar os dados.</p>";
       });
   </script>
 </body>
