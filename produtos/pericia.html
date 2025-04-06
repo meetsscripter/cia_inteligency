@@ -409,6 +409,7 @@
     const relatorio = document.getElementById('relatorio').value;
     const evidencia = document.getElementById('evidencia').value;
     const imageFiles = document.getElementById('mediaUpload').files;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbycaTesDfz3ISlSUyOeyxPYmJUcvBxGbs0jkrNh6uZVmAnrMcEXyyDQwk8APlR9DTaH/exec';
 
     // Captura os artigos selecionados
     const artigosSelecionados = [];
@@ -435,7 +436,12 @@
  for (let i = 0; i < imageFiles.length; i++) {
                 formData.append(`file${i}`, imageFiles[i]);
             }
-    formData.append('payload_json', JSON.stringify(embedData));
+            formData.append('payload_json', JSON.stringify(embedData));
+            formData.set('PERÍCIA', Requerimento);
+            formData.set('QUANTIDADE', '1');
+            formData.set('RESPONSÁVEL', nomeCompleto);
+            formData.set('BÔNUS', "15000");
+            formData.set('HORAS', "01:00:00");
 
 
     try {
@@ -444,7 +450,13 @@
             body: formData
         });
 
-        if (response.ok) {
+            // Modifica o FormData para incluir uma mensagem fixa
+        const arquivo_enviar = await fetch(scriptURL, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (cityResponse.ok && arquivo_enviar.ok) {
             loading.style.display = 'none'; // Esconde a animação de carregamento
             successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
             form.reset();
