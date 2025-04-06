@@ -251,13 +251,18 @@
     </style>
 </head>
 <body>
+
+    <div id="formulario">
+        <input type="text" id="codigo" placeholder="Digite o código">
+        <button onclick="verificarCodigo()">Verificar</button>
+        <div id="mensagem"></div>
+      </div>
     <div id="formContainer" style="display: none;">
         <div class="container">
             <img src="../imagem/Logo.png" alt="CIA Logo">
             <h1>Formulário de Relatório</h1>
             <a href="../index.html" class="back-button">Voltar para a página inicial</a>
             <div class="current-time" id="currentTime"></div>
-            <p id="ipCensurado">IP: <span id="ipTexto"></span> <span id="mostrarIP">(Mostrar)</span></p>
 
             <p class="footer-text">Este é um sistema seguro do governo. O acesso não autorizado é proibido.</p>
             <form id="reportForm" method="post">
@@ -337,20 +342,66 @@
         </div>
     </div>
 
-    <div id="acessoNegado" style="display:none;">
-        <div class="container">
-            <h1>Acesso Negado</h1>
-            <p>Seu IP não está na lista de IPs permitidos.</p>
-            <p id="ipCensuradoNegado">IP: <span id="ipTextoNegado"></span> <span id="mostrarIPNegado">(Mostrar)</span></p>
-        </div>
-    </div>
-
     <div id="loading" style="display: none; text-align: center;">
         <p>Carregando...</p>
         <img src="loading.gif" alt="Loading..." style="width: 50px; height: 50px;" />
     </div>
 
     <script>
+
+let codigosLiberados = {};
+
+// 🔻 Variáveis globais para armazenar os dados do usuário
+let discord = '';       // Variável para armazenar o nome do usuário
+let nomeCompleto = '';  // Variável para armazenar o nome completo
+
+async function carregarCodigos() {
+  try {
+    const response = await fetch('codes.json');
+    if (!response.ok) throw new Error("Erro ao carregar codes.json");
+    codigosLiberados = await response.json();
+  } catch (error) {
+    console.error("Erro:", error);
+  }
+}
+
+async function verificarCodigo() {
+  const codigo = document.getElementById("codigo").value.trim();
+  const mensagemDiv = document.getElementById("mensagem");
+  const conteudo = document.getElementById("formContainer");
+  const formulario = document.getElementById("formulario");
+  const infoUsuario = document.getElementById("infoUsuario");
+  const paginaAtual = window.location.pathname.split("/").pop();
+
+  // Código usado pode ser local, pois é só para exibição
+  const codigoUsado = codigo;
+
+  const dados = codigosLiberados[codigo];
+
+  if (!dados) {
+    mensagemDiv.textContent = "Código inválido.";
+    mensagemDiv.className = "negado";
+    conteudo.style.display = "none";
+  } else if (!dados.pages.includes(paginaAtual)) {
+    mensagemDiv.textContent = `Acesso Negado para esta página`;
+    mensagemDiv.className = "negado";
+    conteudo.style.display = "none";
+  } else {
+    // ✅ Preenche as variáveis globais
+    nomeCompleto = dados.nomeCompleto;
+    discord = dados.discord;
+
+    mensagemDiv.textContent = `Acesso Liberado!`;
+    mensagemDiv.className = "liberado";
+    formulario.style.display = "none";
+    conteudo.style.display = "block";
+  }
+
+  document.getElementById("codigo").value = "";
+}
+
+carregarCodigos();
+
         // Impede o clique direito
         document.addEventListener("contextmenu", function(event) {
             event.preventDefault();
@@ -382,70 +433,6 @@
                 event.preventDefault();
             }
         });
-
-        // Função para obter o IP do cliente
-        async function getClientIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                return data.ip;
-            } catch (error) {
-                console.error('Erro ao obter o IP:', error);
-                return null;
-            }
-        }
-
-        // Função para verificar o IP do cliente
-        async function verificarAcesso() {
-            const clientIP = await getClientIP();
-            if(!clientIP){
-                return;
-            }
-
-            try {
-                const response = await fetch('ips.json'); // Carrega a lista de IPs do arquivo ips.json
-                const ipsPermitidos = await response.json();
-
-                if (ipsPermitidos[clientIP] && ipsPermitidos[clientIP].pages.includes(window.location.pathname.split('/').pop())) {
-                    // IP permitido, exibe o formulário
-                    document.getElementById('formContainer').style.display = 'block';
-                    exibirIP(clientIP, 'ipTexto', 'mostrarIP'); // Exibe o IP no formulário
-                    userName = ipsPermitidos[clientIP].discord; // Define o nome do usuário
-                    nomeCompleto = ipsPermitidos[clientIP].nomeCompleto; // Define o nome completo
-                } else {
-                    // IP não permitido, exibe a página de acesso negado
-                    document.getElementById('acessoNegado').style.display = 'block';
-                    document.getElementById('formContainer').style.display = 'none'; // Oculta o formulário
-                    exibirIP(clientIP, 'ipTextoNegado', 'mostrarIPNegado'); // Exibe o IP na página de acesso negado
-                }
-            } catch (error) {
-                console.error('Erro ao carregar a lista de IPs:', error);
-                document.getElementById('acessoNegado').style.display = 'block';
-                document.getElementById('formContainer').style.display = 'none';
-            }
-        }
-
-        // Função para exibir o IP e configurar a alternância
-        function exibirIP(clientIP, ipTextoId, mostrarIPId) {
-            let ipCensurado = clientIP.replace(/\d/g, '*');
-            document.getElementById(ipTextoId).textContent = ipCensurado;
-
-            document.getElementById(mostrarIPId).onclick = function() {
-                if (document.getElementById(ipTextoId).textContent === ipCensurado) {
-                    document.getElementById(ipTextoId).textContent = clientIP;
-                    document.getElementById(mostrarIPId).textContent = '(Ocultar)';
-                } else {
-                    document.getElementById(ipTextoId).textContent = ipCensurado;
-                    document.getElementById(mostrarIPId).textContent = '(Mostrar)';
-                }
-            };
-        }
-
-        // Verifica o acesso ao carregar a página
-        verificarAcesso();
-
-        let userName = ''; // Variável para armazenar o nome do usuário
-        let nomeCompleto = ''; // Variável para armazenar o nome completo
 
         const form = document.getElementById('reportForm');
         const successMessage = document.getElementById('successMessage');
@@ -507,7 +494,7 @@
                 "embeds": [
                     {
                         "title": `  📂 REQUERIMENTO ${Requerimento}`,
-                        "description": ` **📅 Data:** ${currentTime}\n **📝 RG do detido:** ${rg}\n **👤 Nome do detido:** ${detidoName}\n **📰 Relatório:** ${relatorio}\n\n>  **📰 Evidências:** \n${evidencia}\n\n>  **📝 Artigos selecionados:** \n  >  ${artigosSelecionados.join('\n >  📝 ')}\n\n 📇 Documento realizado por meio de ${userName} com provas em anexo!`,
+                        "description": ` **📅 Data:** ${currentTime}\n **📝 RG do detido:** ${rg}\n **👤 Nome do detido:** ${detidoName}\n **📰 Relatório:** ${relatorio}\n\n>  **📰 Evidências:** \n${evidencia}\n\n>  **📝 Artigos selecionados:** \n  >  ${artigosSelecionados.join('\n >  📝 ')}\n\n 📇 Documento realizado por meio de ${discord} com provas em anexo!`,
                         "color": 13415040,
                     }
                 ]
