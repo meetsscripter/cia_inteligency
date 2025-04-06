@@ -22,7 +22,7 @@
     "168.195.133.22": {
       "discord": "<@308674394903805952>",
       "nomeCompleto": "Locutor",
-      "pages": ["mba.html", "apostila.html", "dados.html"]
+      "pages": ["mba.html", "apostila.html", "dados.html", "pericia.html"]
     },
     "143.208.208.137": {
       "discord": "<@302488608785563648>",
@@ -42,7 +42,7 @@
     "104.28.207.194": {
       "discord": "<@308674394903805952>",
       "nomeCompleto": "Chagas",
-      "pages": ["mba.html", "apostila.html", "dados.html"]
+      "pages": ["mba.html", "apostila.html", "dados.html", "pericia.html"]
     },
       "190.89.180.197": {
       "discord": "<@773009244202467380>",
@@ -137,7 +137,7 @@
     "177.23.50.33": {
       "discord": "<@1266959977554116638>",
       "nomeCompleto": "Derick",
-      "pages": ["mba.html", "apostila.html", "dados.html"]
+      "pages": ["mba.html", "apostila.html", "dados.html", "pericia.html"]
     }
 
   }
