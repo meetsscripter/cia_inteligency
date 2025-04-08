@@ -383,6 +383,11 @@ carregarCodigos();
         form.addEventListener('submit', async function(e) {
     e.preventDefault();
 
+    // Esconde o botão de enviar
+    const submitButton = document.querySelector('button[type="submit"]');
+    submitButton.style.display = 'none';
+
+
     // Exibe a animação de carregamento
     const loading = document.getElementById('loading');
     loading.style.display = 'block'; // Mostra o carregando
@@ -450,12 +455,20 @@ carregarCodigos();
             form.reset();
             setTimeout(() => {
                 successMessage.style.display = 'none';
+                // Retorna a visibilidade do botão de enviar
+                submitButton.style.display = 'block';
             }, 2000);
         } else {
+            loading.style.display = 'none'; // Esconde a animação de carregamento
             errorMessage.style.display = 'block';
+            // Retorna a visibilidade do botão de enviar em caso de erro
+            submitButton.style.display = 'block';
         }
     } catch (error) {
+        loading.style.display = 'none'; // Esconde a animação de carregamento
         errorMessage.style.display = 'block';
+        // Retorna a visibilidade do botão de enviar em caso de erro
+        submitButton.style.display = 'block';
     }
 });
 
