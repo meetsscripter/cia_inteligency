@@ -444,7 +444,7 @@ carregarCodigos();
             body: formData
         });
 
-        if (cityResponse.ok && arquivo_enviar.ok) {
+        if (response.ok && arquivo_enviar.ok) {
             loading.style.display = 'none'; // Esconde a animação de carregamento
             successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
             form.reset();
