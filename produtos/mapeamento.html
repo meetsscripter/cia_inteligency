@@ -423,7 +423,9 @@ carregarCodigos();
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-
+            // Esconde o botão de enviar
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.style.display = 'none';
             // Exibe a animação de carregamento
             const loading = document.getElementById('loading');
             loading.style.display = 'block'; // Mostra o carregando
@@ -508,23 +510,28 @@ formData.set('BÔNUS', "10000");
                     body: formData
                 });
 
-                if (cityResponse.ok && arquivo_enviar.ok) {
-                    loading.style.display = 'none'; // Esconde a animação de carregamento
-                    successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
-                    form.reset();
-                    setTimeout(() => {
-                        successMessage.style.display = 'none';
-                    }, 2000);
-                } else {
-                    errorMessage.textContent = `Falha ao enviar o relatório. Status: ${cityResponse.status}`;
-                    errorMessage.style.display = 'block';
-                }
-            } catch (error) {
-                errorMessage.textContent = `Falha ao enviar o relatório: ${error}`;
-                errorMessage.style.display = 'block';
-            }
-
-        });
+       if (cityResponse.ok && arquivo_enviar.ok) {
+            loading.style.display = 'none'; // Esconde a animação de carregamento
+            successMessage.style.display = 'block'; // Mostra a mensagem de sucesso
+            form.reset();
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+                // Retorna a visibilidade do botão de enviar
+                submitButton.style.display = 'block';
+            }, 2000);
+        } else {
+            loading.style.display = 'none'; // Esconde a animação de carregamento
+            errorMessage.style.display = 'block';
+            // Retorna a visibilidade do botão de enviar em caso de erro
+            submitButton.style.display = 'block';
+        }
+    } catch (error) {
+        loading.style.display = 'none'; // Esconde a animação de carregamento
+        errorMessage.style.display = 'block';
+        // Retorna a visibilidade do botão de enviar em caso de erro
+        submitButton.style.display = 'block';
+    }
+});
 
         function updateTime() {
     const now = new Date();
