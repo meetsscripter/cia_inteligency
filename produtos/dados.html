@@ -4,367 +4,338 @@
     <meta charset="UTF-8">
     <title>Relatório de Inteligência</title>
     <style>
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; } /* Ligeiramente mais suave */
-        }
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
 
-        @keyframes moveLine {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(100%); }
-        }
+@keyframes moveLine {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
 
-        @keyframes fadeOut {
-            to { opacity: 0; visibility: hidden; }
-        }
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-        body {
-            margin: 0;
-            padding: 30px; /* Reduzindo um pouco o padding geral */
-            background-color: #0d1117;
-            font-family: 'Fira Code', 'Courier New', Courier, monospace; /* Adicionando uma fonte moderna de fallback */
-            color: #c9d1d9;
-            line-height: 1.6; /* Melhora a legibilidade do texto */
-        }
+body {
+    margin: 0;
+    padding: 30px;
+    background-color: #0d1117;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    color: #c9d1d9;
+    line-height: 1.6;
+}
 
-        h1 {
-            text-align: center;
-            font-size: 3.5em; /* Ajustando o tamanho da fonte */
-            margin-bottom: 30px; /* Ajustando a margem inferior */
-            color: #58a6ff;
-            text-shadow: 0 0 10px #58a6ff; /* Ligeiramente mais intenso */
-        }
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
 
-        #formulario {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #0f1a25;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(88,166,255,0.3);
-            align-items: center;
-            justify-content: center;
-        }
+header h1 {
+    font-size: 3.5em;
+    color: #58a6ff;
+    text-shadow: 0 0 10px #58a6ff;
+}
 
-        #formulario input[type="text"] {
-            padding: 12px;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            background-color: #161b22;
-            color: #c9d1d9;
-            font-family: 'Fira Code', 'Courier New', Courier, monospace;
-            font-size: 1em;
-        }
+#auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+}
 
-        #formulario button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            background-color: #58a6ff;
-            color: #0d1117;
-            font-family: 'Fira Code', 'Courier New', Courier, monospace;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+#formulario {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    background-color: #0f1a25;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(88,166,255,0.3);
+    align-items: center;
+}
 
-        #formulario button:hover {
-            background-color: #3d8bf1;
-        }
+#formulario input[type="text"] {
+    padding: 12px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background-color: #161b22;
+    color: #c9d1d9;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 1em;
+}
 
-        #mensagem {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
+#formulario button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #58a6ff;
+    color: #0d1117;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-        #mensagem.liberado {
-            color: #1fdf64;
-        }
+#formulario button:hover {
+    background-color: #3d8bf1;
+}
 
-        #mensagem.negado {
-            color: #ff7b72;
-        }
+#mensagem {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
 
-        .resumo {
-            background-color: #0f1a25;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(88,166,255,0.4);
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 1.3em; /* Ajustando o tamanho da fonte */
-            animation: flicker 2s infinite;
-        }
+#mensagem.liberado {
+    color: #1fdf64;
+}
 
-        .resumo span {
-            display: block;
-            font-size: 1em;
-            margin: 10px 0;
-        }
+#mensagem.negado {
+    color: #ff7b72;
+}
 
-        .resumo .bonus {
-            color: #1fdf64;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
+.scan-line {
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(to right, #58a6ff, transparent);
+    animation: moveLine 2s linear infinite;
+    margin-bottom: 30px;
+}
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ligeiramente menor para melhor adaptação */
-            gap: 20px; /* Ajustando o espaçamento */
-            margin-bottom: 40px;
-        }
+#overview h2,
+#location-data h2,
+#agents-performance h2 {
+    color: #58a6ff;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 2em;
+}
 
-        .card {
-            background-color: #0f1a25;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 0 18px rgba(88,166,255,0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Adicionando transição para o hover */
-        }
+.resumo {
+    background-color: #0f1a25;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(88,166,255,0.4);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+    animation: flicker 2s infinite;
+}
 
-        .card:hover {
-            transform: translateY(-5px); /* Leve efeito de elevação */
-            box-shadow: 0 5px 24px rgba(88,166,255,0.5); /* Hover mais pronunciado */
-        }
+.resumo span {
+    display: block;
+    margin: 8px 0;
+}
 
-        .card h2 {
-            font-size: 1.5em;
-            color: #58a6ff;
-            margin-bottom: 10px;
-        }
+.resumo .bonus {
+    color: #1fdf64;
+    font-weight: bold;
+    font-size: 1.2em;
+}
 
-        .card p {
-            margin: 8px 0;
-            font-size: 1em;
-            text-align: center;
-        }
+#location-data .location-counts {
+    background-color: #0f1a25;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(88,166,255,0.4);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1em;
+    animation: fadeIn 2s forwards 3s;
+    opacity: 0;
+}
 
-        .scan-line {
-            height: 3px; /* Ligeiramente mais fino */
-            width: 100%;
-            background: linear-gradient(to right, #58a6ff, transparent);
-            animation: moveLine 2s linear infinite;
-            margin-bottom: 25px; /* Ajustando a margem */
-        }
+#location-data .location-counts h3 {
+    color: #58a6ff;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
 
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #0d1117;
-            color: #58a6ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            font-size: 1.8em;
-            z-index: 9999;
-            animation: fadeOut 1s ease forwards;
-            animation-delay: 3s;
-        }
+#location-data .location-counts p {
+    margin: 6px 0;
+}
 
-        .loading-screen img {
-            width: 100px; /* Ajustando o tamanho da imagem de loading */
-            height: auto;
-        }
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+    animation: fadeIn 2s forwards 3.5s;
+    opacity: 0;
+}
 
-        .loading-text {
-            animation: flicker 2s infinite;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
+.card {
+    background-color: #0f1a25;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 18px rgba(88,166,255,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
 
-        .location-counts {
-            background-color: #0f1a25;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(88,166,255,0.4);
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1em;
-            animation: fadeIn 2s forwards 3s;
-            opacity: 0;
-        }
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 24px rgba(88,166,255,0.5);
+}
 
-        .location-counts h2 {
-            font-size: 1.2em;
-            color: #58a6ff;
-            margin-bottom: 8px;
-        }
+.card h2 {
+    font-size: 1.5em;
+    color: #58a6ff;
+    margin-bottom: 10px;
+}
 
-        .location-counts p {
-            margin: 6px 0;
-        }
+.card p {
+    margin: 8px 0;
+    font-size: 1em;
+}
 
-        /* Media Queries para Responsividade */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5em;
-                margin-bottom: 20px;
-            }
-
-            .resumo {
-                font-size: 1.1em;
-                padding: 20px;
-                margin-bottom: 30px;
-            }
-
-            .dashboard {
-                grid-template-columns: 1fr; /* Empilhando os cards em telas menores */
-                gap: 15px;
-                margin-bottom: 30px;
-            }
-
-            .card h2 {
-                font-size: 1.3em;
-            }
-
-            .card p {
-                font-size: 0.9em;
-            }
-
-            .location-counts {
-                font-size: 0.9em;
-                padding: 12px;
-                margin-bottom: 20px;
-            }
+.limit-message {
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 0.
         }
     </style>
 </head>
 <body>
 
-    <div id="formulario">
-        <input type="text" id="codigo" placeholder="Digite o código">
-        <button onclick="verificarCodigo()">Verificar</button>
-        <div id="mensagem"></div>
-      </div>
+    <header>
+        <h1>Relatório de Inteligência</h1>
+    </header>
 
-<div id="formContainer" style="display: none;">
-    <div class="loading-screen" id="loading">
-        <img src="https://i.gifer.com/ZKZg.gif" alt="Carregando..." width="120">
-        <div class="loading-text">Carregando dados secretos...</div>
-    </div>
+    <section id="auth">
+        <div id="formulario">
+            <input type="text" id="codigo" placeholder="Digite o código">
+            <button onclick="verificarCodigo()">Verificar</button>
+            <div id="mensagem"></div>
+        </div>
+    </section>
 
-    <h1 style="animation: fadeIn 2s forwards 3s; opacity: 0;">Relatório de Inteligência</h1>
-    <div class="scan-line" style="animation: moveLine 2s linear infinite, fadeIn 2s forwards 3s; opacity: 0;"></div>
-    <div id="resumo" class="resumo" style="animation: fadeIn 2s forwards 3s; opacity: 0;"></div>
-    <div id="locationCounts" class="location-counts" style="display: none;">
-        <h2>Mapeamentos realizados</h2>
-        <p>Los Santos: <span id="losSantosCount">0</span></p>
-        <p>Las Venturas: <span id="lasVenturasCount">0</span></p>
-        <p>San Fierro: <span id="sanFierroCount">0</span></p>
-        <p>Flinty County: <span id="flintyCountyCount">0</span></p>
-        <p>Red County: <span id="redCountyCount">0</span></p>
-        <p>Whetstone County: <span id="whetstoneCountyCount">0</span></p>
-    </div>
-    <div id="lista" class="dashboard" style="animation: fadeIn 2s forwards 3.5s; opacity: 0;"></div>
-</div>
+    <main id="content" style="display: none;">
+        <div class="loading-screen" id="loading">
+            <img src="https://i.gifer.com/ZKZg.gif" alt="Carregando..." width="120">
+            <div class="loading-text">Carregando dados secretos...</div>
+        </div>
 
+        <div class="scan-line"></div>
+
+        <section id="overview">
+            <h2>Visão Geral</h2>
+            <div id="resumo" class="resumo"></div>
+        </section>
+
+        <section id="location-data">
+            <h2>Dados por Localização</h2>
+            <div id="locationCounts" class="location-counts" style="display: none;">
+                <h3>Mapeamentos Realizados</h3>
+                <p>Los Santos: <span id="losSantosCount">0</span></p>
+                <p>Las Venturas: <span id="lasVenturasCount">0</span></p>
+                <p>San Fierro: <span id="sanFierroCount">0</span></p>
+                <p>Flinty County: <span id="flintyCountyCount">0</span></p>
+                <p>Red County: <span id="redCountyCount">0</span></p>
+                <p>Whetstone County: <span id="whetstoneCountyCount">0</span></p>
+            </div>
+        </section>
+
+        <section id="agents-performance">
+            <h2>Desempenho dos Agentes</h2>
+            <div id="lista" class="dashboard"></div>
+            <div id="limitMessageContainer"></div>
+        </section>
+    </main>
+
+    <footer>
+        </footer>
 
     <script>
+        let codigosLiberados = {};
+        let discord = '';
+        let nomeCompleto = '';
 
-let codigosLiberados = {};
+        async function carregarCodigos() {
+            try {
+                const response = await fetch('codes.json');
+                if (!response.ok) throw new Error("Erro ao carregar codes.json");
+                codigosLiberados = await response.json();
+            } catch (error) {
+                console.error("Erro:", error);
+            }
+        }
 
-// 🔻 Variáveis globais para armazenar os dados do usuário
-let discord = '';       // Variável para armazenar o nome do usuário
-let nomeCompleto = '';  // Variável para armazenar o nome completo
+        async function verificarCodigo() {
+            const codigo = document.getElementById("codigo").value.trim();
+            const mensagemDiv = document.getElementById("mensagem");
+            const contentDiv = document.getElementById("content");
+            const authSection = document.getElementById("auth");
+            const paginaAtual = window.location.pathname.split("/").pop();
 
-async function carregarCodigos() {
-  try {
-    const response = await fetch('codes.json');
-    if (!response.ok) throw new Error("Erro ao carregar codes.json");
-    codigosLiberados = await response.json();
-  } catch (error) {
-    console.error("Erro:", error);
-  }
-}
+            const dados = codigosLiberados[codigo];
 
-async function verificarCodigo() {
-  const codigo = document.getElementById("codigo").value.trim();
-  const mensagemDiv = document.getElementById("mensagem");
-  const conteudo = document.getElementById("formContainer");
-  const formulario = document.getElementById("formulario");
-  const infoUsuario = document.getElementById("infoUsuario");
-  const paginaAtual = window.location.pathname.split("/").pop();
+            if (!dados) {
+                mensagemDiv.textContent = "Código inválido.";
+                mensagemDiv.className = "negado";
+                contentDiv.style.display = "none";
+                authSection.style.display = "block";
+            } else if (!dados.pages.includes(paginaAtual)) {
+                mensagemDiv.textContent = "Acesso Negado para esta página";
+                mensagemDiv.className = "negado";
+                contentDiv.style.display = "none";
+                authSection.style.display = "block";
+            } else {
+                nomeCompleto = dados.nomeCompleto;
+                discord = dados.discord;
 
-  // Código usado pode ser local, pois é só para exibição
-  const codigoUsado = codigo;
+                mensagemDiv.textContent = "Acesso Liberado!";
+                mensagemDiv.className = "liberado";
+                authSection.style.display = "none";
+                contentDiv.style.display = "block";
+            }
 
-  const dados = codigosLiberados[codigo];
+            document.getElementById("codigo").value = "";
+        }
 
-  if (!dados) {
-    mensagemDiv.textContent = "Código inválido.";
-    mensagemDiv.className = "negado";
-    conteudo.style.display = "none";
-  } else if (!dados.pages.includes(paginaAtual)) {
-    mensagemDiv.textContent = `Acesso Negado para esta página `;
-    mensagemDiv.className = "negado";
-    conteudo.style.display = "none";
-  } else {
-    // ✅ Preenche as variáveis globais
-    nomeCompleto = dados.nomeCompleto;
-    discord = dados.discord;
+        carregarCodigos();
 
-    mensagemDiv.textContent = `Acesso Liberado!`;
-    mensagemDiv.className = "liberado";
-    formulario.style.display = "none";
-    conteudo.style.display = "block";
-  }
-
-  document.getElementById("codigo").value = "";
-}
-
-carregarCodigos();
-
-        // Impede o clique direito
         document.addEventListener("contextmenu", function(event) {
             event.preventDefault();
         });
 
-        // Bloqueia atalhos de desenvolvedor
         document.addEventListener("keydown", function(event) {
             if (event.ctrlKey && (event.key === "u" || event.key === "s" || event.key === "i" || event.key === "j")) {
                 event.preventDefault();
             }
-            if (event.keyCode === 123) { // Bloqueia tecla F12
+            if (event.keyCode === 123) {
                 event.preventDefault();
             }
         });
 
-        // Detecta a abertura do DevTools e força um redirecionamento
         setInterval(function() {
             let before = new Date().getTime();
-            debugger; // Caso o DevTools seja aberto, o tempo de execução muda
+            debugger;
             let after = new Date().getTime();
             if (after - before > 100) {
-                window.location.href = "about:blank"; // Fecha o site
+                window.location.href = "about:blank";
             }
         }, 500);
 
-        // Impede a seleção de texto, mas permite interações com campos de texto
         document.addEventListener("mousedown", function(event) {
             if (event.target.tagName !== "INPUT" && event.target.tagName !== "TEXTAREA") {
                 event.preventDefault();
             }
         });
 
-
         const API_URL = "https://script.google.com/macros/s/AKfycbyEGgkE55FQpA1teX4LF95f0nddkOWbHHfW1rNPuduq2OYOn4pe29FgMo57SATepEfS/exec";
+        const BONUS_LIMIT = 100000;
+        const limitMessageContainer = document.getElementById("limitMessageContainer");
 
         function somarHoras(horas) {
             let totalSegundos = 0;
@@ -422,37 +393,42 @@ carregarCodigos();
                     totalRegistrosGeral += 1;
                 });
 
-                // Atualiza a contagem de localizações no HTML
                 document.getElementById("losSantosCount").textContent = locationCounts['Los Santos'];
                 document.getElementById("lasVenturasCount").textContent = locationCounts['Las Venturas'];
                 document.getElementById("sanFierroCount").textContent = locationCounts['San Fierro'];
                 document.getElementById("flintyCountyCount").textContent = locationCounts['Flinty County'];
                 document.getElementById("redCountyCount").textContent = locationCounts['Red County'];
                 document.getElementById("whetstoneCountyCount").textContent = locationCounts['Whetstone County'];
-                locationCountsDiv.style.display = 'block'; // Exibe a contagem de localizações
+                locationCountsDiv.style.display = 'block';
 
                 const totalHorasFinal = `${String(Math.floor(totalHorasGeralSegundos / 3600)).padStart(2, '0')}:${String(Math.floor((totalHorasGeralSegundos % 3600) / 60)).padStart(2, '0')}:${String(totalHorasGeralSegundos % 60).padStart(2, '0')}`;
 
                 resumo.innerHTML = `
-                    <span class="bonus">Bônus: ${totalBonusGeral.toFixed(2)}</span>
-                    <span>Horas: ${totalHorasFinal}</span>
-                    <span>Registros: ${totalRegistrosGeral}</span>
+                    <span class="bonus">Bônus Total: ${totalBonusGeral.toFixed(2)}</span>
+                    <span>Horas Totais: ${totalHorasFinal}</span>
+                    <span>Registros Totais: ${totalRegistrosGeral}</span>
                 `;
 
                 Object.entries(totais).forEach(([nome, info]) => {
                     const somaHoras = somarHoras(info.horas);
                     const div = document.createElement("div");
                     div.className = "card";
+                    let bonusDisplay = info.bonusTotal.toFixed(2);
+                    let limitMessage = '';
+                    if (info.bonusTotal > BONUS_LIMIT) {
+                        bonusDisplay = `${BONUS_LIMIT.toFixed(2)}`;
+                        limitMessage = `<div class="limit-message">Ele receberá somente o limite de ${BONUS_LIMIT.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>`;
+                    }
                     div.innerHTML = `
                         <h2>${nome}</h2>
-                        <p><strong>Bônus Total:</strong> ${info.bonusTotal.toFixed(2)}</p>
-                        <p><strong>Horas Totais:</strong> ${somaHoras}</p>
+                        <p><strong>Bônus:</strong> ${bonusDisplay}</p>
+                        <p><strong>Horas:</strong> ${somaHoras}</p>
                         <p><strong>Registros:</strong> ${info.quantidade}</p>
+                        ${limitMessage}
                     `;
                     lista.appendChild(div);
                 });
 
-                // Esconde a tela de loading após os dados serem carregados
                 document.getElementById("loading").style.display = "none";
             })
             .catch(error => {
